@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+  text-align: center;
+}
+
+#nav-top {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+#nav-top li {
+    float: right;
+}
+
+#nav-top li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+#nav-top li a:hover {
+    background-color: #111;
+}
+
+.main {
+  border: solid;
+  height: 400px;
+  width:600px;
+}
+/* Create underline usnder the selected path */
+body.home nav ul li.home { border-bottom: 1px solid #f0f; }
+body.home li.home  { border-bottom-color: #f0f; }
+
+body.posts nav ul li.posts { border-bottom: 1px solid #f0f; }
+body.posts li.posts { border-bottom-color: #f0f; }
+
+body.post-new nav ul li.post-new { border-bottom: 1px solid #f0f; }
+body.post-new li.post-new  { border-bottom-color: #f0f; }
+
+body.login nav ul li.login { border-bottom: 1px solid #f0f; }
+body.login li.login {border-bottom-color: #f0f; }
+
+body.sign-up nav ul li.sign-up { border-bottom: 1px solid #f0f; }
+body.sign-up li.sign-up { border-bottom-color: #f0f; }
+
+/*Creating a login */
+
+body.loggedin li.login { display: none; }
+body.loggedin li.sign-up { display: none; }
+
+body.loggedin li.logout { display: inline-block; }
+body:not(.loggedin) li.logout { display: none; }
+
+body.loggedin .only-when-logged-in { display: auto }
+body:not(.loggedin) .only-when-logged-in { display: none; }

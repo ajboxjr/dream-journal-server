@@ -1,0 +1,11 @@
+<div class="login">
+<h2 class="form-signin-heading">Please sign in</h2>
+  <form class="form-login" action="/login" method="POST">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" placeholder="username">
+    <label for="password"> Password</label>
+    <input type="password" id="password" name="password" placeholder="password">
+    <button type="submit">Login</button>
+    <div class="status">{{message}}</div>
+  </form>
+</div>
