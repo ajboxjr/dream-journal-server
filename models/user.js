@@ -5,10 +5,12 @@ const Schema = mongoose.Schema
 const UserSchema =  new Schema({
   createdAt : {type: Date},
   username  : {type: String, required: true},
+  firstName : {type: String},
+  lastName  : {type: String},
   password  : {type: String, select: false, required: true },
   dreams    : [{type: Schema.Types.ObjectId, ref: 'Dream'}]
 })
-  
+
 //Check if password is correct and pass to callback
 // Must use function here! ES6 => functions do not bind this!
 UserSchema.pre('save', function(next) {
@@ -32,6 +34,17 @@ UserSchema.methods.comparePassword = function(password, done) {
   bcrypt.compare(password, this.password, (err, isMatch) => {
     done(err, isMatch);
   });
+}
+
+UserSchema.methods.fullName = function(done) {
+  if(this.firstName != null || this.lastName != null){
+    const fullName = this.firstName + " " + this.lastName
+    err = null
+  }
+  else{
+    err = "You haven't entered a first or lastname"
+  }
+  done(err, fullName)
 }
 
 module.exports = mongoose.model('User', UserSchema);

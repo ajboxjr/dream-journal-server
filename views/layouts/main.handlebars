@@ -3,12 +3,23 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/css/header.css" type="text/css">
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/css/footer.css" type="text/css">
   </head>
-  {{> header}}
   <body class="{{bodyClass}}">
-    {{{body}}}
-
-  {{> footer}}
+    <div class="site-container">
+      <header class="site-header">
+        {{> header}}
+      </header>
+      <div class="main">
+        {{{body}}}
+      </div>
+      <footer>
+        {{> footer}}
+      </footer>
+    </div>
   </body>
 </html>

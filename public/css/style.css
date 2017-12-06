@@ -1,6 +1,140 @@
+html {
+    font-family: Gordita, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin 0;
+}
+
+.banner {
+  position: relative;
+  margin: 0 auto;
+  width: 80%;
+  background-repeat: no-repeat;
+}
+.banner img {
+  display:block;
+  margin:auto;
+  width: 80%;
+}
+.banner h1 {
+  position: absolute;
+  text-align: center;
+  top: 40%;
+  width: 100%;
+  color: white;
+  font-size: 40px;
+
+}
+
 body {
+	margin: 0;
+	font-weight: 400;
+}
+
+.main {
+  margin: 0 auto;
+}
+
+/* Login */
+div.dream-group {
+  padding-top: 30px ;
+  margin: 0 auto;
+  width: 80%;
+}
+.index-title {
+  display: inline-block;
+}
+.dream-search {
+  display: inline-block;
+  float: right;
+}
+/* Dream items */
+div.dream-item {
+  padding: 5px;
+  border-radius: 15px;
+  background-color: #53687E;
+  border-style: solid green;
+  border-width: 2px;
+  margin: 0 0 10px 10px;
+}
+div.dream-head h1 {
+  font-size: 32px;
+  display: inline-block;
+}
+div.dream-head p {
+  display: inline-block;
+}
+div.dream-item #dream-entry {
+  border: 1px solid;
+}
+div.main {
+  height: 1000px;
+}
+div.tag-items li{
+  display: inline-block;
+}
+div.main > .container {
+  border-top: 1px solid;
+  height: 90%;
+  width: 90%;
+  margin-top: 10px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 5px;
+  text-decoration: underline;
+
+}
+div.main .index-title{
+  border-bottom: 1px solid;
+  font-size: 60px;
+
+}
+div.dream-item {
+  box-sizing: border-box;
+}
+/* Change the link color to #111 (black) on hover */
+
+div.tag-group #tags {
+  display: inline-block;
+}
+
+div.login {
+  margin: 0 auto;
+  width: 50%;
+  margin-top: 200px;
+}
+div.login a {
+  align-self: auto;
+}
+div.login .form-signin-heading{
+  text-align: center;
+  margin: 0 0 40px;
+  align-self: center;
   margin: 0;
 }
+div.login .form-login{
+  margin: 0 auto;
+  text-align: center;
+}
+div.sign-up {
+  margin: 0 auto;
+  width: 50%;
+  margin-top: 200px;
+}
+div.sign-up .header {
+  align-self: center;
+  text-align: center;
+}
+div.sign-up .form-sign-up {
+  text-align: center;
+  margin: 0 auto;
+}
+div.sign-up
 .footer {
   position: fixed;
   left: 0;
@@ -11,50 +145,21 @@ body {
   text-align: center;
 }
 
-#nav-top {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
 
-#nav-top li {
-    float: right;
-}
-
-#nav-top li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-/* Change the link color to #111 (black) on hover */
-#nav-top li a:hover {
-    background-color: #111;
-}
-
-.main {
-  border: solid;
-  height: 400px;
-  width:600px;
-}
 /* Create underline usnder the selected path */
-body.home nav ul li.home { border-bottom: 1px solid #f0f; }
+body.home nav.nav-primary ul li.home { border-bottom: 1px solid #f0f; }
 body.home li.home  { border-bottom-color: #f0f; }
 
-body.posts nav ul li.posts { border-bottom: 1px solid #f0f; }
+body.posts nav.nav-primary ul li.posts { border-bottom: 1px solid #f0f; }
 body.posts li.posts { border-bottom-color: #f0f; }
 
-body.post-new nav ul li.post-new { border-bottom: 1px solid #f0f; }
+body.post-new nav.nav-primary ul li.post-new { border-bottom: 1px solid #f0f; }
 body.post-new li.post-new  { border-bottom-color: #f0f; }
 
-body.login nav ul li.login { border-bottom: 1px solid #f0f; }
+body.login nav.nav-primary ul li.login { border-bottom: 1px solid #f0f; }
 body.login li.login {border-bottom-color: #f0f; }
 
-body.sign-up nav ul li.sign-up { border-bottom: 1px solid #f0f; }
+body.sign-up nav.nav-primary ul li.sign-up { border-bottom: 1px solid #f0f; }
 body.sign-up li.sign-up { border-bottom-color: #f0f; }
 
 /*Creating a login */
@@ -67,3 +172,6 @@ body:not(.loggedin) li.logout { display: none; }
 
 body.loggedin .only-when-logged-in { display: auto }
 body:not(.loggedin) .only-when-logged-in { display: none; }
+
+body.loggedin .only-when-logged-in { display: auto }
+body:not(.loggedin) .only-when-logged-in { display: none}

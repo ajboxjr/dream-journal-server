@@ -1,15 +1,22 @@
 const mongoose = require('mongoose')
+
+// Implemented to search the query fields
+var searchable = require('mongoose-searchable');
+
 const Schema = mongoose.Schema
 
 const DreamSchema = new Schema({
-   dream: { type: String, required: true },
-   people: { type: String},
-   actions : { type: String},
-   emotions : { type: String},
+   title: {type: String, required: true },
+   entry: { type: String, required: true },
+   tags: [{type: String}],
    createdAt: {type: Date},
    updatedAt: {type: Date},
-   author : { type: Schema.Types.ObjectId, ref: 'User', required: true },
+   author: { type: Schema.Types.ObjectId, ref: 'User', required: true }
   });
+
+DreamSchema.plugin(searchable, {
+    fields: ['title', 'entry', 'tags']
+});
 
 DreamSchema.pre('save', function(next){
   const date = new Date

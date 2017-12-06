@@ -30,6 +30,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/dream-journal',
 //importing controllers
 const dreams = require('./controllers/dream')
 const auth = require('./controllers/auth-controller')
+const profile = require('./controllers/profile')
+const about = require('./controllers/about')
 
 //importing models
 const Dream = require('./models/dream')
@@ -41,25 +43,36 @@ const checkAuth = function(req, res, next){
 	if(req.cookies.nToken === undefined || req.cookies.nToken === null){
 		req.user = null
 		req.bodyClass = " "
+		//Check if route is a posting route or a profile router
+		if(req.url == '/profile'|| req.url=='/dream/new'){
+			return res.redirect('/login')
+		}
 	} else {
 		var token = req.cookies.nToken
 		var decodedToken = jwt.decode(token, {complete: true} || {});
 		req.user = decodedToken.payload;
 		req.bodyClass = " loggedin"
+		console.log(req.url)
 	}
 	next();
 }
+
+
 
 //Middleware
 app.use(checkAuth);
 app.use('/', dreams); // Route for CRUDDING dreams
 app.use('/', auth); //Login and Signup router
+app.use('/', profile) //User Profile and settings
+app.use('/', about)
 
 app.get('/', (req, res) => {
 	let bodyClass = "home"
 	bodyClass += req.bodyClass
 	console.log(bodyClass)
-  res.render('index', { bodyClass })
+	Dream.find({}, (err, dreams) => {
+  	res.render('index', { bodyClass, user: req.user, dreams })
+	})
 })
 
 app.listen(3000, () =>{
