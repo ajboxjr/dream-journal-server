@@ -2,10 +2,9 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const DreamSchema = new Schema({
-   dream: { type: String, required: true },
-   people: { type: String},
-   actions : { type: String},
-   emotions : { type: String},
+   title: {type: String, required: true },
+   entry: { type: String, required: true },
+   tags: [{type: String}],
    createdAt: {type: Date},
    updatedAt: {type: Date},
    author : { type: Schema.Types.ObjectId, ref: 'User', required: true },

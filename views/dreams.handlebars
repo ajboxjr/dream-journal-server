@@ -1,0 +1,9 @@
+<div class="dream-group">
+  {{# each dreams}}
+  <div class="dream-item">
+    <a href="dream/{{this._id}}"><h1>{{this.title}}</h1></a>
+    <p>By: <span class="author">{{this.author}}</span></p>
+    <p>Content: <br> {{this.entry}}</p>
+  </div>
+  {{/ each}}
+</div>

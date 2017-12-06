@@ -30,6 +30,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/dream-journal',
 //importing controllers
 const dreams = require('./controllers/dream')
 const auth = require('./controllers/auth-controller')
+const profile = require('./controllers/profile')
 
 //importing models
 const Dream = require('./models/dream')
@@ -50,16 +51,18 @@ const checkAuth = function(req, res, next){
 	next();
 }
 
+
 //Middleware
 app.use(checkAuth);
 app.use('/', dreams); // Route for CRUDDING dreams
 app.use('/', auth); //Login and Signup router
+app.use('/', profile) //User Profile and settings
 
 app.get('/', (req, res) => {
 	let bodyClass = "home"
 	bodyClass += req.bodyClass
 	console.log(bodyClass)
-  res.render('index', { bodyClass })
+  res.render('index', { bodyClass, user: req.user })
 })
 
 app.listen(3000, () =>{

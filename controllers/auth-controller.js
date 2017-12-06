@@ -4,10 +4,9 @@ const bosyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/user');
+
 //Login function. Used to test and for modularity
 // Signup functon. Testing and Modulartiy
-
-
 router.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -49,6 +48,7 @@ router.get('/login', (req, res) => {
   }
   res.render('login', {bodyClass})
 })
+
 //Sign user into the Dream Journal
 router.post('/sign-up', (req, res) => {
   const user = new User(req.body)
@@ -63,6 +63,7 @@ router.post('/sign-up', (req, res) => {
     return res.status(400).send({err:err})
     })
 })
+
 // Sign up Rotuter
 router.get('/sign-up', (req, res) => {
   let bodyClass = "sign-up"

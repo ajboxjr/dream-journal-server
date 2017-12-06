@@ -67,3 +67,6 @@ body:not(.loggedin) li.logout { display: none; }
 
 body.loggedin .only-when-logged-in { display: auto }
 body:not(.loggedin) .only-when-logged-in { display: none; }
+
+body.loggedin .only-when-logged-in { display: auto }
+body:not(.loggedin) .only-when-logged-in { display: none}
