@@ -1,13 +1,13 @@
-<div class="banner">
-  <img src="http://colorbond.com/sites/default/files/images/header-bg/cb-colour-nightsky.jpg" alt="">
-  <h1 class="banner-title">REMEMBER YOUR DREAMS</h1>
-</div>
 <div class="container">
+  <div class="banner-text">
+    <h1>I remember my dreams</h1><br>
+    <a href="/dream/new"><button type="button" class="button"  src="http://cdn.onlinewebfonts.com/svg/img_245542.png" name="button">Start Dreaming</button></a>
+  </div>
   {{#if user}}
   <div class="welcome-message only-when-logged-in">
     <!-- Pass in user to enter their name -->
     <h1> Welcome <span id="username">{{user._id}}</span></h1>
   </div>
-  <a href="/dream/new"><button type="button">Dream</button></a>
+  <a href="/dream"><button type="button">View Dreams</button></a>
   {{/ if}}
 </div>

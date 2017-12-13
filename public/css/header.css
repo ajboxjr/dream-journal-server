@@ -5,6 +5,8 @@ header::after {
 }
 .site-header {
   border-bottom: 2px solid;
+  top: 0;
+  width: 100%;
 }
 
 .header-container {
@@ -19,7 +21,7 @@ header::after {
 
 .logo > a {
   text-decoration: none;
-  color: black;
+  color: white;
   font-size: 32px;
 }
 

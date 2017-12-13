@@ -1,4 +1,4 @@
-<form action="/dream/new" method="POST">
+<form class="dream-new" action="/dream/new" method="POST">
   <fieldset>
     <legend>New Dream</legend>
     <!--<select class="dream-type" name="">
@@ -6,13 +6,16 @@
       <option value="portion">Selection</option>
     </select>-->
     <label for="title">Title</label>
-    <input type="text" name="title"><br>
+    <input type="text" name="title" style="width: 100%;"><br>
 
-    <label for="entry">Dream Entry:</label>
-    <input type="text" name="entry"><br>
+    <p>
+    <label for="entry">Dream Entry</label>
+    <textarea rows="5" cols="80" name="entry">
+    </textarea>
+  </p>
 
     <label for="tags">Tags</label>
-    <input type="text" name="tags"><br>
+    <input type="text" name="tags" style="width: 100%;"><br>
 
     <input type="submit" value="Submit">
   </fieldset>

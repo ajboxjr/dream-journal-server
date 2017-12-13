@@ -1,5 +1,5 @@
 # Dream-journal
-Dream Journal is a tool to Record your Dreams. 
+Dream Journal is a tool to Record your Dreams.
 - People wake up and do not remember what they dreamed.
 # Tools
 - For this project I used Node Js and Express routing

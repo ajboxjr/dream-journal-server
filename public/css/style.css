@@ -9,7 +9,28 @@ html, body {
   height: 100%;
   margin 0;
 }
+body {
+  height: 100%
+}
+.banner-text h1 {
+  width: 100%;
+}
+.banner-text button {
+  display: block;
+  margin-top: 100px;
+ width: 100%;
+}
 
+body {
+	margin: 0;
+	font-weight: 400;
+}
+
+/* Site Container */
+.site-container {
+  position: absolute;
+  width: 100%;
+}
 .banner {
   position: relative;
   margin: 0 auto;
@@ -21,6 +42,9 @@ html, body {
   margin:auto;
   width: 80%;
 }
+fieldset {
+  color: white;
+}
 .banner h1 {
   position: absolute;
   text-align: center;
@@ -28,23 +52,56 @@ html, body {
   width: 100%;
   color: white;
   font-size: 40px;
-
 }
-
-body {
-	margin: 0;
-	font-weight: 400;
+.canvas {
+  position: absolute;
+  top: 0;
 }
-
-.main {
+div.profile-container{
+  width: 30%;
   margin: 0 auto;
+}
+div.profile-container h1 {
+  font-size: 40px;
+}
+div.profile-container h1, p {
+  color: white;
+}
+/* Main Header */
+div.main {
+  margin: 0 auto;
+  height: 100%;
+}
+.search-input {
+  width: 400px;
+}
+div.main .banner-text {
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 100px;
+  font-size: 42px;
+}
+div.main .banner-text h1 {
+    color: "#3BFB5AF"
+}
+div.main .index-title{
+  border-bottom: 1px solid;
+  font-size: 60px;
+
 }
 
 /* Login */
 div.dream-group {
   padding-top: 30px ;
-  margin: 0 auto;
-  width: 80%;
+  padding-left: 50px;
+  width: 75%;
+}
+
+div.dream-group .dream-list-group {
+  display: inline;
 }
 .index-title {
   display: inline-block;
@@ -53,6 +110,7 @@ div.dream-group {
   display: inline-block;
   float: right;
 }
+
 /* Dream items */
 div.dream-item {
   padding: 5px;
@@ -72,9 +130,6 @@ div.dream-head p {
 div.dream-item #dream-entry {
   border: 1px solid;
 }
-div.main {
-  height: 1000px;
-}
 div.tag-items li{
   display: inline-block;
 }
@@ -89,11 +144,7 @@ div.main > .container {
   text-decoration: underline;
 
 }
-div.main .index-title{
-  border-bottom: 1px solid;
-  font-size: 60px;
 
-}
 div.dream-item {
   box-sizing: border-box;
 }
@@ -103,37 +154,125 @@ div.tag-group #tags {
   display: inline-block;
 }
 
+
+/* Header COntainer */
+.sign-in-form {
+	background-color: rgba(245, 245, 245, 0.1);
+	width: 350px;
+	border: none;
+	font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+	color: #FFFFFF;
+}
+
+.form-signin-heading {
+	text-align: center;
+	padding: 20px 0px 20px 0px;
+	font-weight: normal;
+}
+
+.form-login {
+	display: flex;
+	flex-direction: column;
+	margin: 10px 20px;
+}
+
+fieldset.form{
+  width: 400px;
+  margin: auto;
+  height: 350px;
+  border: 1px solid;
+}
+form.dream-new {
+  width: 30%;
+  padding-top: 100px;
+  margin: 0 auto;
+}
+form.dream-new legend {
+  font-size: 30px;
+}
+.login .form h1 {
+  font-size: 40px;
+}
+form label {
+  font-size: 20px;
+}
+div.about-container {
+  width: 50%;
+  margin: auto;
+  align-items: center;
+}
+div.about-container h1 {
+  color: white;
+  font-size: 40px;
+}
+div.about-container li {
+  color: white;
+}
+div.about-container p {
+  color: white;
+}
+div.about-container .about-info {
+  border: 1px solid white;
+}
+input, button {
+	padding: 15px 20px;
+	margin-bottom: 20px;
+  border-radius: 3px;
+  font-size: 1rem;
+}
 div.login {
   margin: 0 auto;
   width: 50%;
-  margin-top: 200px;
+  padding-top: 100px;
+
 }
 div.login a {
   align-self: auto;
 }
 div.login .form-signin-heading{
   text-align: center;
-  margin: 0 0 40px;
   align-self: center;
   margin: 0;
 }
+div.login img {
+  position: absolute;
+  left: 50%
+  top: 0;
+  max-width: 100%;
+  max-height: 100%;
+  margin-left: 0 auto;
+}
 div.login .form-login{
+
   margin: 0 auto;
   text-align: center;
 }
 div.sign-up {
+
   margin: 0 auto;
-  width: 50%;
-  margin-top: 200px;
+  width: 550px;
+  height: 300px;
+  margin-top: 100px;
+  border: solid 1px white;
 }
 div.sign-up .header {
+  font-size: 40px;
+  color: white;
   align-self: center;
   text-align: center;
 }
+
 div.sign-up .form-sign-up {
   text-align: center;
   margin: 0 auto;
 }
+
+div.sign-up .form-sign-up label {
+  font-size: 20px;
+  color: white;
+}
+
 div.sign-up
 .footer {
   position: fixed;

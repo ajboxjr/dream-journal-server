@@ -39,7 +39,6 @@ const User = require('./models/user')
 
 // Check whether user has logged in based on cookies.
 const checkAuth = function(req, res, next){
-
 	if(req.cookies.nToken === undefined || req.cookies.nToken === null){
 		req.user = null
 		req.bodyClass = " "
@@ -52,7 +51,7 @@ const checkAuth = function(req, res, next){
 		var decodedToken = jwt.decode(token, {complete: true} || {});
 		req.user = decodedToken.payload;
 		req.bodyClass = " loggedin"
-		console.log(req.url)
+		console.log("checkAuth - req.url : ", req.url)
 	}
 	next();
 }
@@ -75,6 +74,19 @@ app.get('/', (req, res) => {
 	})
 })
 
-app.listen(3000, () =>{
+app.get('/home', (req, res) =>{
+	let bodyClass = "home"
+	bodyClass += req.bodyClass
+	if (req.user){
+		Dream.find({author: req.user._id}, (err, dreams) => {
+	  	res.render('dreams', { bodyClass, user: req.user, dreams })
+		})
+	}
+	else {
+		res.render('index', {bodyClass})
+	}
+})
+
+app.listen(3000, () => {
   console.log('app running on port 3000.')
 })

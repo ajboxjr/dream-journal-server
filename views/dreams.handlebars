@@ -1,1 +1,17 @@
-<h1>Create a new homepage for list of Dreams</h1>
+<div class="dream-group">
+  <div class="dream-list-top">
+    <h1 class="index-title">My Dreams</h1>
+    <form class="dream-search" action="/dream/search" method="post">
+  </div>
+    <input class="search-input" type="text" name="search" placeholder="Search by Tags, Title or Text" ">
+    <button type="submit">Search</button>
+  </form>
+    {{> dreams}}
+    <div class="dream-tag-list">
+      <div class="tag-list-group" width="30px" height="90">
+        {{# each tags}}
+          <button type="button" name="button">{{this}}</button>
+          {{/each}}
+      </div>
+    </div>
+</div>

@@ -40,7 +40,7 @@ router.post('/login', (req, res) => {
   });
 })
 
-//Log user into the Dream journal
+// Log user into the Dream journal
 router.get('/login', (req, res) => {
   let bodyClass = "login"
   if (req.bodyClass){
@@ -49,7 +49,7 @@ router.get('/login', (req, res) => {
   res.render('login', {bodyClass})
 })
 
-//Sign user into the Dream Journal
+// Sign user into the Dream Journal
 router.post('/sign-up', (req, res) => {
   const user = new User(req.body)
   user.save().then((user) => {
@@ -73,7 +73,7 @@ router.get('/sign-up', (req, res) => {
   res.render('signup', {bodyClass})
 })
 
-//Logut Clears server cookies of user.
+// Logut Clears server cookies of user.
 router.get('/logout', (req,res)=>{
 	res.clearCookie('nToken');
 	res.redirect('/');

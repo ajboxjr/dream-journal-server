@@ -1,8 +1,8 @@
 <div class="dream-group">
-  {{# each dreams}}
+  {{# each this.dreams}}
   <div class="dream-item">
     <div class="dream-head">
-      <a href="/dream/{{this._id}}"><h1>{{this.title}}</h1></a>
+      <a href="/dream/{{this._id}}"><h1>{{this.dream.title}}</h1></a>
       <p>Created at: <span id="created-at">{{this.createdAt}}</span></p>
     </div>
     <p id="dream-entry"> {{this.entry}}</p>

@@ -5,7 +5,7 @@ router = express.Router()
 
 const User = require('../models/user')
 
-
+// Needs some comments...
 router.get('/profile', (req, res) => {
   let bodyClass = "profile"
   if(req.bodyClass){

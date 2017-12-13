@@ -4,36 +4,20 @@ const bodyParser = require('body-parser')
 router = express.Router()
 
 //Models
-const Dream = require('../models/dream')
-const User = require('../models/user')
+const Dream = require('../models/dream');
+const User = require('../models/user');
 
 
 // Render all views
 router.get('/dream', (req, res) => {
-  let bodyClass = "dream "
-	bodyClass += req.bodyClass
-  Dream.find({}, (err, dreams) => {
-      console.log(dreams)
-      res.render('dreams', { bodyClass, dreams: dreams })
+  let bodyClass = "dream ";
+	bodyClass += req.bodyClass;
+  // *** Use a promise !!!!
+  // Dream.find().then.catch()
+  Dream.find({author: req.user._id}).exec(function (err, dream) {
+    console.log(dream)
+    res.render('dreams', { dreams: dream })
   })
-})
-
-//Post a dream to the Database
-router.post('/dream/new', (req,res) => {
-  let bodyClass = "dream"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
-  const dream = new Dream()
-  dream.entry = req.body.entry
-  dream.title = req.body.title
-  dream.tags = req.body.tags.replace(/\s/g, '').split(",");
-  dream.author = req.user._id
-  dream.save().then((dream) =>{
-    res.redirect('/dream')
-  }).catch((err) => {
-    console.log(err)
-  });
 })
 
 // Create a new dream
@@ -49,17 +33,50 @@ router.get('/dream/new', (req, res) => {
   res.render('dream-new', {bodyClass})
 })
 
+//Post a dream to the Database
+router.post('/dream/new', (req,res) => {
+  let bodyClass = "dream"
+	if (req.user) {
+		bodyClass += " loggedin"
+	}
+    console.log(req.body)
+    const dream = new Dream()
+    //Add new entry
+    dream.entry = req.body.entry;
+    dream.title = req.body.title;
+    dream.tags = req.body.tags.replace(/\s/g, '').split(",");
+    dream.author = req.user._id;
+    const user = User.findById({_id: dream.author})
+    //Save dream and add to user.
+    dream.save().then((dream) => {
+      return User.findById({_id: req.user._id})
+    }).then((user) =>{
+        //Store the dream id to the user.
+        user.dreams.unshift(dream)
+        console.log(user.dreams)
+        user.save()
+        res.redirect('/dream')
+      }).catch((err) => {
+        console.log(err)
+      });
+})
+
 //Show dream by Id
 router.get('/dream/:dreamId',(req,res) => {
   let bodyClass = "dream"
 	if (req.user) {
 		bodyClass += " loggedin"
 	}
+
+  console.log("get /dream/:id req.params : ", req.params)
+
   Dream.findById({_id: req.params.dreamId}, (err, dream) => {
     if(err){
-      console.log(err)
+      console.log("get dream/:id err - ", err)
+      return res.send("Oops!")
     }
-    res.render('dream',{ bodyClass, dream: dream })
+    res.render('dream', { bodyClass, dream })
+    // res.send("Huh?")
   })
 })
 
