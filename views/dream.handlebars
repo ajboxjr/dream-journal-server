@@ -1,7 +1,12 @@
 
 <a href="/dream"><button type="button" name="button">Back to Dreams</button></a>
 <div class="container">
-  <h1 id="dream-title {{dream.id}}">{{dream.title}}</h1>
-  <p>By: <span class="author">{{dream.author}}</span></p>
+  <h1 id="dream-title">{{dream.title}}</h1>
+
+  <form class="dream-delete-form" action="/dream/{{dream._id}}/delete" method=" ?_method=DELETE">
+    <button type="submit">Delete Dream</button>
+  </form>
+  <input class="dream-delete" type="button" value="Delete" >
+  <p>By: <span class="author">{{dream.author.username}}</span></p>
   <p>Content: <br> {{dream.entry}}</p>
 </div>

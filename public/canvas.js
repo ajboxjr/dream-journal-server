@@ -92,6 +92,7 @@ function start() {
     document.body.style.background = "url(" + canvas.toDataURL() + ")";
 
 
+
     //Create all stars
     for (var j = 0; j < layers.length; j += 1) {
         var layer = layers[j];
@@ -132,7 +133,7 @@ function start() {
 
     function update() {
         if (!paused) {
-            context.clearRect(0, 0, width, height);
+            context.clearRect(0, 0, canvas.width, canvas.height);
             context.fillStyle = "#282a3a";
             context.fillRect(0, 0, width, height);
             context.fill();
@@ -169,6 +170,7 @@ function start() {
                     if (shootingStar.opacity <= 0.0) {
                         shootingStar.isDying = false;
                         shootingStar.isDead = true;
+
                     }
                 }
                 shootingStar.trailLengthDelta += trailLengthDelta;
@@ -187,7 +189,7 @@ function start() {
             }
         }
         requestAnimationFrame(update);
-        
+
     }
 
     function drawStar(star) {

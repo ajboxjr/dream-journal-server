@@ -70,7 +70,7 @@ router.get('/dream/:dreamId',(req,res) => {
 
   console.log("get /dream/:id req.params : ", req.params)
 
-  Dream.findById({_id: req.params.dreamId}, (err, dream) => {
+  Dream.findById({_id: req.params.dreamId}).populate('author').exec((err, dream) => {
     if(err){
       console.log("get dream/:id err - ", err)
       return res.send("Oops!")
@@ -80,6 +80,12 @@ router.get('/dream/:dreamId',(req,res) => {
   })
 })
 
+router.get('/dream/:dreamId/delete', (req, res) => {
+  Dream.findByIdAndRemove({_id: req.params.dreamId}).exec((err,dream) =>{
+    console.log("Dream Deleted Sucessfully")
+    res.redirect('/dream')
+  })
+})
 //Edit A dream information
 router.get('/dream/:dreamId/edit', (req, res) => {
   let bodyClass = "dream"
@@ -103,14 +109,14 @@ router.get('/dream/tag/:tagName', (req, res) => {
 
 router.post('/dream/search/', (req, res) => {
   let search = req.body
-  Dream.search(req.body.search, (err, dreams) =>{
-    if (err){
-      console.log(err);
-    }
-    console.log(dreams);
+    Dream.search(req.body.search, (err, dreams) =>{
+      if (err){
+        console.log(err);
+      }
+      console.log(dreams);
 
-    res.render('search', { search, dreams })
+      res.render('search', { search, dreams })
+    })
   })
-})
 
 module.exports = router

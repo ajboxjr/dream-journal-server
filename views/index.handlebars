@@ -1,13 +1,17 @@
 <div class="container">
-  <div class="banner-text">
-    <h1>I remember my dreams</h1><br>
-    <a href="/dream/new"><button type="button" class="button"  src="http://cdn.onlinewebfonts.com/svg/img_245542.png" name="button">Start Dreaming</button></a>
-  </div>
   {{#if user}}
   <div class="welcome-message only-when-logged-in">
     <!-- Pass in user to enter their name -->
-    <h1> Welcome <span id="username">{{user._id}}</span></h1>
+    <h1 style="color: white;"> Welcome:  <span id="username" style="color:white;">{{user.username}}</span></h1>
   </div>
   <a href="/dream"><button type="button">View Dreams</button></a>
   {{/ if}}
+  <div class="banner-text">
+    <h1>I remember my dreams...</h1>
+  </div>
+
+  <div class="cloud-button">
+    <p>Start Dreaming</p>
+    <a href="/dream/new"><img class="cloud-button" src="http://cdn.onlinewebfonts.com/svg/img_7290.png"></a>
+  </div>
 </div>
