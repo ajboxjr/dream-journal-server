@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 app = express();
 
+//Destroy MongoDB Process sudo killall -15 mongod
+
 //Creating a static folder for static files(css, images)
 app.use(express.static(__dirname + '/public'));
 
@@ -37,22 +39,24 @@ const about = require('./controllers/about')
 const Dream = require('./models/dream')
 const User = require('./models/user')
 
-// Check whether user has logged in based on cookies.
+//Obtaining token from client to pass to api calls
 const checkAuth = function(req, res, next){
-	if(req.cookies.nToken === undefined || req.cookies.nToken === null){
-		req.user = null
-		req.bodyClass = " "
-		//Check if route is a posting route or a profile router
-		if(req.url == '/profile'|| req.url=='/dream/new'){
-			return res.redirect('/login')
-		}
+	console.log("checkAuth - req.url : ", req.url)
+	//Set user(token info) to none if on login
+	if(req.url == '/api/login'  ||  req.url == '/api/sign-up'){
+		req.user == null
 	} else {
-		var token = req.cookies.nToken
-		var decodedToken = jwt.decode(token, {complete: true} || {});
-		req.user = decodedToken.payload;
-		req.bodyClass = " loggedin"
-		console.log("checkAuth - req.url : ", req.url)
-	}
+		//Get token
+	 var token = req.body.token || req.query.token || req.headers['x-access-token'];
+	 //Decode nToken
+	 var decodedToken = jwt.decode(token, {complete: true} || {});
+	 //grab store payload as user
+	 console.log('the token is ',decodedToken)
+	 req.user = decodedToken.payload;
+	 //Check if user in database l8r babe
+
+		//Check if route is a posting route or a profile router
+		}
 	next();
 }
 
@@ -60,32 +64,33 @@ const checkAuth = function(req, res, next){
 
 //Middleware
 app.use(checkAuth);
-app.use('/', dreams); // Route for CRUDDING dreams
-app.use('/', auth); //Login and Signup router
-app.use('/', profile) //User Profile and settings
-app.use('/', about)
+app.use('/api', dreams); // Route for CRUDDING dreams
+app.use('/api', auth); //Login and Signup router
+app.use('/api', profile) //User Profile and settings
+app.use('/api', about)
 
-app.get('/', (req, res) => {
-	let bodyClass = "home"
-	bodyClass += req.bodyClass
-	console.log(bodyClass)
-	Dream.find({}, (err, dreams) => {
-  	res.render('index', { bodyClass, user: req.user, dreams })
-	})
-})
+// app.get('/', (req, res) => {
+// 	let bodyClass = "home"
+// 	bodyClass += req.bodyClass
+// 	console.log(bodyClass)
+// 	Dream.find({}, (err, dreams) => {
+// 		res.send(dreams)
+//   	//res.render('index', { bodyClass, user: req.user, dreams })
+// 	})
+// })
 
-app.get('/home', (req, res) =>{
-	let bodyClass = "home"
-	bodyClass += req.bodyClass
-	if (req.user){
-		Dream.find({author: req.user._id}, (err, dreams) => {
-	  	res.render('dreams', { bodyClass, user: req.user, dreams })
-		})
-	}
-	else {
-		res.render('index', {bodyClass})
-	}
-})
+// app.get('/home', (req, res) =>{
+// 	let bodyClass = "home"
+// 	bodyClass += req.bodyClass
+// 	if (req.user){
+// 		Dream.find({author: req.user._id}, (err, dreams) => {
+// 	  	//res.render('dreams', { bodyClass, user: req.user, dreams })
+// 		})
+// 	}
+// 	else {
+// 		//res.render('index', {bodyClass})
+// 	}
+// })
 
 app.listen(3000, () => {
   console.log('app running on port 3000.')
