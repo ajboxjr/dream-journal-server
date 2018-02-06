@@ -10,55 +10,42 @@ const User = require('../models/user');
 
 // Render all views
 router.get('/dream', (req, res) => {
-  let bodyClass = "dream ";
-	bodyClass += req.bodyClass;
+
   // *** Use a promise !!!!
   // Dream.find().then.catch()
-  Dream.find({author: req.user._id}).exec(function (err, dream) {
-    console.log(dream)
-    res.render('dreams', { dreams: dream })
+  console.log('dreaming')
+  Dream.find({author: req.user._id}).exec((err, dreams) => {
+    return res.status(200).json({ dreams, sucess: true, message:"Sucessfuly recieved!! :)" })
+  }).catch((err) =>{
+    return res.status(401).json({ sucess: true, message:"Error!" })
   })
-})
-
-// Create a new dream
-router.get('/dream/new', (req, res) => {
-  if(req.user === null){
-    res.redirect('/login')
-  }
-  let bodyClass = "dream"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
-
-  res.render('dream-new', {bodyClass})
 })
 
 //Post a dream to the Database
 router.post('/dream/new', (req,res) => {
-  let bodyClass = "dream"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
-    console.log(req.body)
     const dream = new Dream()
     //Add new entry
     dream.entry = req.body.entry;
     dream.title = req.body.title;
-    dream.tags = req.body.tags.replace(/\s/g, '').split(",");
+    dream.tags = req.body.tags
     dream.author = req.user._id;
-    const user = User.findById({_id: dream.author})
     //Save dream and add to user.
     dream.save().then((dream) => {
-      return User.findById({_id: req.user._id})
-    }).then((user) =>{
+
+      return User.findById({_id: dream.author})
+
+    }).then((user) => {
         //Store the dream id to the user.
         user.dreams.unshift(dream)
         console.log(user.dreams)
         user.save()
-        res.redirect('/dream')
-      }).catch((err) => {
+        //res.redirect('/dream')
+        res.status(201).json({dream, sucess: false, err: null})
+      })
+      .catch((err) => {
         console.log(err)
-      });
+        res.json({dream, sucess: true, err: err})
+    });
 })
 
 //Show dream by Id
@@ -69,31 +56,66 @@ router.get('/dream/:dreamId',(req,res) => {
 	}
 
   console.log("get /dream/:id req.params : ", req.params)
-
   Dream.findById({_id: req.params.dreamId}).populate('author').exec((err, dream) => {
-    if(err){
+    if(dream){
+      return res.send({dream: dream, sucess: true, message:'Sucessfuly recieved dream entry', err: null})
+    }else{
       console.log("get dream/:id err - ", err)
       return res.send("Oops!")
     }
-    res.render('dream', { bodyClass, dream })
+    //res.render('dream', { bodyClass, dream })
     // res.send("Huh?")
   })
 })
 
 router.get('/dream/:dreamId/delete', (req, res) => {
   Dream.findByIdAndRemove({_id: req.params.dreamId}).exec((err,dream) =>{
-    console.log("Dream Deleted Sucessfully")
-    res.redirect('/dream')
+    if (dream){
+      console.log("Dream Deleted Sucessfully")
+      return res.status(200).json({ message: "Dream Deleted Sucessfully", sucess: true, err: null })
+    }
+    else{
+      return res.status(400).json({ message: "Dream Deleted", sucess: false, err: true})
+    }
   })
 })
-//Edit A dream information
-router.get('/dream/:dreamId/edit', (req, res) => {
-  let bodyClass = "dream"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
-  res.send('Edit dream based on ID')
+// //Edit A dream information
+// router.get('/dream/:dreamId/edit', (req, res) => {
+//   let bodyClass = "dream"
+// 	if (req.user) {
+// 		bodyClass += " loggedin"
+// 	}
+//   res.send('Edit dream based on ID')
+// })
+
+router.post('/dream/:dreamId/edit', (req, res) => {
+  console.log(req.body.tags)
+  const dreamId = req.params.dreamId
+  Dream.findById({_id: req.params.dreamId}).populate('author').exec((err, dream) => {
+    if(dream){
+      if (req.body.title && req.body.entry && req.body.tags){
+        dream.title = req.body.title
+        dream.tags = req.body.tags
+        dream.entry = req.body.entry
+        dream.save()
+          .then((dream) => {
+              res.json({dream: dream, message: 'sucessfully edited', sucess:true, err: null})
+          })
+          .catch((err) =>{
+              res.json({message: 'could not save dream', sucess:false, err: true})
+          })
+      }
+      else{
+        res.json({message: 'all fields not entered', sucess: false, err: true})
+      }
+    }
+    else {
+      console.log('didn\'t find dream');
+      return res.json({message: err, sucess: false, err: true})
+    }
+  })
 })
+
 
 router.get('/dream/tag/:tagName', (req, res) => {
   let selectTag = req.params.tagName;
@@ -106,6 +128,7 @@ router.get('/dream/tag/:tagName', (req, res) => {
     res.render('search', { dreams })
   })
 })
+
 
 router.post('/dream/search/', (req, res) => {
   let search = req.body
