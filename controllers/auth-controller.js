@@ -11,71 +11,49 @@ router.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   // Find this user name
-  User.findOne({ username }, 'username password').then((user) => {
+  User.findOne({ username }, 'username password')
+    .then((user) => {
+      console.log(user)
+
     if (!user) {
       // User not found
-      return res.render('login', {message: 'Wrong Username or Password' });
+      //return res.render('login', {message: 'Wrong Username or Password' });
+      return res.status(401).json({ sucess: false, err: 'wrong Username or Password', token:null})
     }
     // Check the password
     user.comparePassword(password, (err, isMatch) => {
       console.log(isMatch)
       if (!isMatch) {
         // Password does not match
-        return res.render('login', {message: 'Wrong Username or Password' });
+        //return res.render('login', {message: 'Wrong Username or Password' });
+        return res.status(401).json({ sucess: false, err: 'wrong Username or Password', token:null})
       }
 			console.log('the password is correct!')
       // Create a token
       const token = jwt.sign(
         { _id: user._id, username: user.username }, process.env.SECRET,
-        { expiresIn: "60 days" }
+        { expiresIn: "30 days" }
       );
-      // Set a cookie and redirect to root
-      res.cookie('nToken', token, { maxAge: 900000, httpOnly: true });
 			//Console log logged in if logged in
-			console.log('sucessfully logged in')
-      res.redirect('/');
+      return res.json({sucess: true, message: 'sucessfully logged in', token});
     });
-  }).catch((err) => {
-    console.log(err);
+  })
+  .catch((err) => {
+    return res.json({ sucess: false, message: err, token:null})
   });
-})
-
-// Log user into the Dream journal
-router.get('/login', (req, res) => {
-  let bodyClass = "login"
-  if (req.bodyClass){
-    bodyClass += req.bodyClass
-  }
-  res.render('login', {bodyClass})
 })
 
 // Sign user into the Dream Journal
 router.post('/sign-up', (req, res) => {
   const user = new User(req.body)
-  user.save().then((user) => {
-    //Create a toekn to authenticate the user
-    var token = jwt.sign({_id: user._id}, process.env.SECRET, {expiresIn:"30 days"})
-    console.log(`The verified token ${token}`)
-    res.cookie('nToken', token, {maxAge:900000, httpOnly:true})//saving the cookie and requiring it be httpOnly
-    res.redirect('/')
-    }).catch((err) => {
-    console.log(err.message)
-    return res.status(400).send({err:err})
+  user.save()
+  .then((user) => {
+    var token = jwt.sign({ _id: user._id, username: user.username }, process.env.SECRET, {expiresIn:"30 days"})
+    return res.json({sucess: true, message: 'signed in sucessfully', token})
+  })
+  .catch((err) => {
+    return res.status(401).json({ sucess: false, token: null, message: err.message });
     })
 })
 
-// Sign up Rotuter
-router.get('/sign-up', (req, res) => {
-  let bodyClass = "sign-up"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
-  res.render('signup', {bodyClass})
-})
-
-// Logut Clears server cookies of user.
-router.get('/logout', (req,res)=>{
-	res.clearCookie('nToken');
-	res.redirect('/');
-});
 module.exports = router
