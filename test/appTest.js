@@ -20,69 +20,70 @@ var getUserCount = (err, count) =>{
 describe('Basic Auth', function() {
 
 
-  describe('login', () => {
-    it("Should log user into API", (done)=>{
-      chai.request(app)
-        .post('/api/login')
-        .send({'username': 'Username', 'password': 'password'})
-        .end(function(err, res){
-        res.body.success.should.equal(true);
-        res.should.have.status(200);
-        should.not.exist(err)
-        done();
-      });
-    })
-  })
-
-
-    describe('signup', () => {
-      var count = null
-
-      beforeEach(function(done){
-        User.count({},(err,c) => {
-         count = c
-        })
-        done()
-      })
-
-
-      it("Should attempt sign up existing user", (done) => {
-        chai.request(app)
-          .post('/api/sign-up')
-          .send({'username': 'Username', 'password': 'password'})
-          .end(function(err, res){
-            res.body.success.should.equal(false);
-            done();
-        })
-        User.count({},(err,c) => {
-          c.should.equal(count)
-        })
-      })
-
-
-      it("Should create a new user", (done)=>{
-        chai.request(app)
-          .post('/api/sign-up')
-          .send({'username': 'newuser', 'password': 'newpass'})
-          .end(function(err, res){
-            res.body.success.should.equal(true);
-            console.log(res.body._id);
-          })
-            User.count({},(err,c) => {
-              console.log(c);
-              c.should.equal(count+1)
-          })
-          done();
-
-      })
-
-      after(function(done){
-        User.find({username:'newuser'}).remove().then((user)=>{
-          console.log(' user has been removed.');
-        });
-        done()
-      })
-  })
+  // describe('login', () => {
+  //   it("Should log user into API", (done)=>{
+  //     chai.request(app)
+  //       .post('/api/login')
+  //       .send({'username': 'Username', 'password': 'password'})
+  //       .end(function(err, res){
+  //       res.body.success.should.equal(true);
+  //       res.should.have.status(200);
+  //       should.not.exist(err)
+  //       done();
+  //     });
+  //   })
+  // })
+  //
+  //
+  //   describe('signup', () => {
+  //     var count = null
+  //
+  //     beforeEach(function(done){
+  //       User.count({},(err,c) => {
+  //        count = c
+  //       })
+  //       done()
+  //     })
+  //
+  //
+  //     it("Should attempt sign up existing user", (done) => {
+  //       chai.request(app)
+  //         .post('/api/sign-up')
+  //         .send({'username': 'Username', 'password': 'password'})
+  //         .end(function(err, res){
+  //           res.body.success.should.equal(false);
+  //           done();
+  //       })
+  //       // User.count({},(err,c) => {
+  //       //   c.should.equal(count)
+  //       // })
+  //     })
+  //
+  //
+  //     it("Should create a new user", (done)=>{
+  //       chai.request(app)
+  //         .post('/api/sign-up')
+  //         .send({'username': 'newuser', 'password': 'newpass'})
+  //         .end(function(err, res){
+  //           res.body.success.should.equal(true);
+  //           console.log(res.body._id);
+  //         })
+  //           User.count({},(err,c) => {
+  //             console.log(c);
+  //             c.should.equal(count+1)
+  //             done();
+  //
+  //         })
+  //
+  //     })
+  //
+  //     after(function(done){
+  //       User.find({username:'newuser'}).remove().then((user)=>{
+  //         console.log(' user has been removed.');
+  //       });
+  //       done()
+  //     })
+  // })
   describe('Manipulating Dreams', () => {
     var token = ''
 
@@ -92,18 +93,60 @@ describe('Basic Auth', function() {
         .send({'username': 'Username', 'password': 'password'})
         .end(( err, res )=> {
           token = res.body.token
+          done()
         })
     })
 
-
-    it('Should post a dream to list', () => {
+    var dreamId = ""
+    console.log(token);
+    it('Should post a dream to list', (done) => {
       chai.request(app)
-      .post('api/dream/new')
-      .send({'username': 'Username', 'password': 'password', token})
+      .post('/api/dream/new')
+      .send({'entry': 'this is the entry', 'tags': ['one','tow','cow'], title:'title', token})
       .end((err,res)=> {
-        res.should.have.status(200);
+        res.should.have.status(201);
         res.body.success.should.equal(true);
-        res.body.should.have.proprty('dream')
+        res.body.should.have.property('dream')
+        dreamId = res.body.dream._id
+        done()
+      })
+    })
+
+    it('Should Get the current Dream', (done) => {
+      console.log(dreamId);
+      chai.request(app)
+      .get('/api/dream/'+dreamId )
+      .send({token})
+      .end((err, res)=>{
+        res.should.have.status(200)
+        res.body.dream.should.have.property('title')
+        res.body.dream.should.have.property('tags')
+        res.body.dream.should.have.property('entry')
+        res.body.dream.should.have.property('author')
+        res.body.dream.should.have.property('_id')
+        done()
+      })
+
+    })
+    it('Should edit the current Dream', (done) => {
+      chai.request(app)
+        .post('/api/dream/'+dreamId+'/edit')
+        .send({'entry': 'this is the editied entry', 'tags': ['moo','two','seven','running','screaming','zombie','commas','elephant'], title:'new_title_ladies', token})
+        .end((err, res)=>{
+          res.body.dream.title.should.equal('new_title_ladies')
+          res.body.dream.tags.should.have.lengthOf(8)
+          done()
+        })
+    })
+    it('should delete the current Dream', (done) => {
+      chai.request(app)
+      .del('/api/dream/'+dreamId+'/delete')
+      .send({token})
+      .end((err, res) => {
+        res.should.have.status(200);
+        // res.body..should.not.exist;
+        //Search for dream should not exists
+        done()
       })
     })
   })

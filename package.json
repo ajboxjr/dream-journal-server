@@ -2,9 +2,11 @@
   "name": "dream-journal",
   "version": "1.0.0",
   "description": "Record you dreams",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "deploy": "gcloud app deploy",
+    "start": "node server.js"
   },
   "keywords": [
     "lucid",
@@ -16,13 +18,18 @@
   "author": "Anthony Box",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/nodejs-repo-tools": "^2.2.1",
     "bcrypt": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
+    "chai-http": "^3.0.0",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
+    "express-flash": "0.0.2",
     "express-handlebars": "^3.0.0",
+    "flash": "^1.1.0",
+    "helmet": "^3.12.0",
     "jsonwebtoken": "^8.1.0",
     "method-override": "^2.3.10",
     "mongoose": "^4.13.9",

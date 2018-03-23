@@ -9,7 +9,6 @@ const jwt = require('jsonwebtoken');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
-var flash = require('express-flash');
 var helmet = require('helmet')
 app = express(helmet());
 

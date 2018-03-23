@@ -53,14 +53,15 @@ router.post('/dream/new', (req,res) => {
     }).then((user) => {
         //Store the dream id to the user.
         user.dreams.unshift(dream)
+        console.log(dream);
         console.log(user.dreams)
         user.save()
         //res.redirect('/dream')
-        res.status(201).json({ dream, success: false, err: null })
+        res.status(201).json({ dream, success: true, err: null })
       })
       .catch((err) => {
         console.log(err)
-        res.json({ dream, success: true, err: err })
+        res.json({ dream, success: false, err: err })
     });
 })
 
@@ -75,25 +76,27 @@ router.get('/dream/:dreamId',(req,res) => {
 	}
 
   console.log("get /dream/:id req.params : ", req.params)
-  Dream.findById({ _id: req.params.dreamId }).populate('author').exec((err, dream) => {
-    if(!err){
-      return res.send({ dream: dream, success: true, message:'successfuly recieved dream entry', err: null })
+  Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
+    if(dream){
+      res.json({ dream: dream, success: true, message:'successfuly recieved dream entry', err: null })
     }else{
       console.log("get dream/:id err - ", err)
-      return res.send("Oops!")
+      res.json({message:'Dream not Found', err:err})
     }
   })
 })
 
 
-router.get('/dream/:dreamId/delete', (req, res) => {
+router.delete('/dream/:dreamId/delete', (req, res) => {
+  console.log(req.params.dreamId);
   Dream.findByIdAndRemove({ _id: req.params.dreamId }).exec((err,dream) =>{
-    if (!err){
+    if (dream){
       console.log("Dream Deleted successfully")
-      return res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
+      res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
     }
     else{
-      return res.status(400).json({ message: "Dream Deleted", success: false, err: true})
+      res.status(400).json({message:'Dream not Found', err:err})
+
     }
   })
 })
@@ -102,7 +105,7 @@ router.get('/dream/:dreamId/delete', (req, res) => {
 router.post('/dream/:dreamId/edit', (req, res) => {
   console.log(req.body.tags)
   const dreamId = req.params.dreamId
-  Dream.findById({ _id: req.params.dreamId }).populate('author').exec((err, dream) => {
+  Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
     if(dream){
       if (req.body.title && req.body.entry && req.body.tags){
         dream.title = req.body.title
@@ -113,16 +116,15 @@ router.post('/dream/:dreamId/edit', (req, res) => {
               res.json({ dream: dream, message: 'successfully edited', success:true, err: null })
           })
           .catch((err) =>{
-              res.json({ message: 'could not save dream', success:false, err: true })
+              res.status(500).json({ message: 'could not save dream', success:false, err: true })
           })
       }
       else{
-        res.json({ message: 'all fields not entered', success: false, err: true })
+        res.status(404).json({ message: 'all fields not entered', success: false, err: true })
       }
     }
     else {
-      console.log('didn\'t find dream');
-      return res.json({ message: err, success: false, err: true })
+      res.status(404).json({ message: err, success: false })
     }
   })
 })
