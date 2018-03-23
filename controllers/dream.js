@@ -1,7 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-// var flash = require('express-flash')
 
 router = express.Router()
 
@@ -12,7 +11,6 @@ const User = require('../models/user');
 
 // Render all views
 router.get('/dream', (req, res) => {
-  // req.flash('dream', 'Dream List');
   User.findById({ _id: req.user._id }).populate('dreams')
     .exec(function (err, user) {
       // console.log(user);
@@ -68,7 +66,6 @@ router.post('/dream/new', (req,res) => {
 
 //Show dream by Id
 router.get('/dream/:dreamId',(req,res) => {
-  // req.flash('dream', 'Display Dream');
 
   let bodyClass = "dream"
 	if (req.user) {

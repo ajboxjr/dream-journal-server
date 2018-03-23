@@ -12,7 +12,6 @@ const methodOverride = require('method-override');
 var helmet = require('helmet')
 app = express(helmet());
 
-app.use(flash())
 //Destroy MongoDB Process sudo killall -15 mongod
 
 //Creating a static folder for static files(css, images)
