@@ -13,23 +13,19 @@ const User = require('../models/user');
 router.get('/dream', (req, res) => {
   User.findById({ _id: req.user._id }).populate('dreams')
     .exec(function (err, user) {
-      // console.log(user);
-      // console.log(err);
 
       if (!err){
         if (user){
             const dreams = user.dreams
-            return res.status(200).json({ dreams, success: true, message:"successfuly recieved!! :)" })
+            res.status(200).json({ dreams, success: true, message:"successfuly recieved!! :)" })
           }
       }
       else{
-        // console.log(user.dreams);
-          console.log(user);
-          return res.status(401).json({ success: true, error: err })
+          res.status(401).json({ success: true, error: err })
 
       }
     }).catch((err) =>{
-      return res.status(401).json({ success: false, message:"Error!" })
+      res.status(401).json({ success: false, message:"Error!" })
 
     })
 })
@@ -51,14 +47,12 @@ router.post('/dream/new', (req,res) => {
     }).then((user) => {
         //Store the dream id to the user.
         user.dreams.unshift(dream)
-        console.log(dream);
-        console.log(user.dreams)
-        user.save()
+        user.save().then((user) =>{
+          res.status(201).json({ dream, success: true, err: null })
+        })
         //res.redirect('/dream')
-        res.status(201).json({ dream, success: true, err: null })
       })
       .catch((err) => {
-        console.log(err)
         res.json({ dream, success: false, err: err })
     });
 })
@@ -86,14 +80,25 @@ router.get('/dream/:dreamId',(req,res) => {
 
 router.delete('/dream/:dreamId/delete', (req, res) => {
   console.log(req.params.dreamId);
-  Dream.findByIdAndRemove({ _id: req.params.dreamId }).exec((err,dream) =>{
-    if (dream){
-      console.log("Dream Deleted successfully")
-      res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
+  User.findById({_id: req.user._id}).exec((err, user)=>{
+    if (user){
+      user.dreams.splice(req.params.dreamId,1)
+      user.save()
+      console.log("User deleted dream successfuly")
+      Dream.findByIdAndRemove({ _id: req.params.dreamId }).exec((err,dream) =>{
+        if (dream){
+          console.log("Dream Deleted successfully")
+          res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
+        }
+        else{
+          console.log("User dream not found")
+          res.status(400).json({message:'Dream not Found', err:err})
+        }
+      })
     }
-    else{
-      res.status(400).json({message:'Dream not Found', err:err})
-
+    else {
+      console.log("User dream not found")
+      res.status(400).json({message:'User not found', err:err})
     }
   })
 })
