@@ -86,8 +86,8 @@ app.use('/api', auth); //Login and Signup router
 app.use('/api', profile) //User Profile and settings
 app.use('/api', user)
 
-var listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('app running on port',listener.address().port)
+var listener = app.listen(process.env.PORT || 3030, () => {
+  console.log('app running on port', listener.address().port)
 })
 
 module.exports = app

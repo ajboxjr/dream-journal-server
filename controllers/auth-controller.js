@@ -20,6 +20,7 @@ router.post('/login', (req, res) => {
   //   console.log(err);
   // })
   // Find this user name
+  console.log(username);
   if(username && password){
     User.findOne({ username }, 'username password', function(err, user){
       console.log(err);
