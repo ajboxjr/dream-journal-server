@@ -132,31 +132,31 @@ router.post('/dream/:dreamId/edit', (req, res) => {
 })
 
 
-router.get('/dream/tag/:tagName', (req, res) => {
-  let selectTag = req.params.tagName;
-  let bodyClass = "dream tag-search"
-  if (req.user) {
-    bodyClass += "loggedin"
-  }
-  Dream.find({ tags: selectTag }, (err, dreams) => {
-    console.log(dreams)
-    res.render('search', { dreams })
-  })
+// router.get('/dream/tag/:tagName', (req, res) => {
+//   let selectTag = req.params.tagName;
+//   let bodyClass = "dream tag-search"
+//   if (req.user) {
+//     bodyClass += "loggedin"
+//   }
+//   Dream.find({ tags: selectTag }, (err, dreams) => {
+//     console.log(dreams)
+//     res.render('search', { dreams })
+//   })
+//
+// })
 
-})
 
-
-router.post('/dream/search/', (req, res) => {
-  let search = req.body
-    Dream.search(req.body.search, (err, dreams) =>{
-      if (err){
-        console.log(err);
-      }
-      console.log(dreams);
-
-      res.render('search', { search, dreams })
-    })
-})
+// router.post('/dream/search/', (req, res) => {
+//   let search = req.body
+//     Dream.search(req.body.search, (err, dreams) =>{
+//       if (err){
+//         console.log(err);
+//       }
+//       console.log(dreams);
+//
+//       res.render('search', { search, dreams })
+//     })
+// })
 
 
 module.exports = router
