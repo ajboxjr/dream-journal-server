@@ -65,7 +65,7 @@ router.post('/sign-up', (req, res) => {
   var regex = /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[~`<>#?!@$%^\'\"&*\-_]).{8,}$/g
   var password = req.body.password
   var verifyPassword = req.body.verifyPassword
-  console.log(verifyPassword);
+  // console.log(verifyPassword);
   User.findOne({username: req.body.username}).then((user) => {
     if (user){
       res.status(404).json({ success: false, token: null, err: ["user exists"] });

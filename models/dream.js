@@ -1,6 +1,4 @@
 const mongoose = require('mongoose')
-// Implemented to search the query fields
-var searchable = require('mongoose-searchable');
 
 const Schema = mongoose.Schema
 
@@ -14,10 +12,6 @@ const DreamSchema = new Schema({
    author: { type: Schema.Types.ObjectId, ref: 'User', required: true }
   });
 
-
-DreamSchema.plugin(searchable, {
-    fields: ['title', 'entry', 'tags']
-});
 
 
 DreamSchema.pre('save', function(next){
