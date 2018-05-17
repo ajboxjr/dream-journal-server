@@ -32,12 +32,6 @@ app.use(methodOverride('_method'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-//Setting up database
-mongoose.Promise = global.Promise;
-// if( process.env.NODE_ENV == 'test'){
-// 	mongoose.connect('mongodb://localhost/dream-journal-test', {useMongoClient: true});
-// }
-mongoose.connect('mongodb://localhost/dream-journal', {useMongoClient: true});
 
 //importing controllers
 const dreams = require('./controllers/dream')
@@ -86,8 +80,17 @@ app.use('/api', auth); //Login and Signup router
 app.use('/api', profile) //User Profile and settings
 app.use('/api', user)
 
+//Setting up database
+mongoose.Promise = global.Promise;
+mongoose.connect(process.env.MONGODB_URI,"mongodb://localhost/dream-jounal" , {useMongoClient: true})
+// .then(()=>{
+// 	console.log('conected to database sucessfully');
+// }).catch((err)=>{
+// 	console.log(err, "\ncould not start databse");
+// });
+
 var listener = app.listen(process.env.PORT || 3000, () => {
-  console.log('app running on port', listener.address().port)
+	console.log('app running on port', listener.address().port)
 })
 
 module.exports = app

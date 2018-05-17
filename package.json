@@ -29,16 +29,16 @@
     "express-handlebars": "^3.0.0",
     "flash": "^1.1.0",
     "helmet": "^3.12.0",
+    "hoek": "^5.0.3",
     "jsonwebtoken": "^8.1.0",
     "method-override": "^2.3.10",
     "mongoose": "^4.13.9",
-    "mongoose-searchable": "^1.0.0",
     "npm": "^6.0.0",
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
-    "nodemon": "^1.17.3"
+    "nodemon": "^1.17.4"
   }
 }
