@@ -15,21 +15,15 @@ router.delete('/user/delete', (req, res) => {
   var oldpwd = req.body.oldpassword;
     User.findById({_id: req.user._id}, 'username password').populate('dreams').exec((err, user) => {
       if (user){
+        //Delete user
         user.comparePassword(oldpwd, (err, isMatch) => {
           if (isMatch){
-            // console.log(`total dreams: ${user.dreams.length}`);
+            //Delete dream from it's database & user.
             user.dreams.map((dreamId, idx) => {
-              Dream.findByIdAndRemove({ _id: dreamId }).exec((err,dream) =>{
-                if (dream){
-                  console.log(`Dream ${idx} Deleted successfully`);
-                }
-                else{
-                  console.log(`Dream not Found ${dreamId}`);
-                }
-            })
-            user.remove()
+              //Optional logging for whether dream is found
+              Dream.findByIdAndRemove({ _id: dreamId })
+              user.remove()
           })
-          console.log('done');
           res.status(200).json({message:'user and dreams deleted successfuly', success: true})
         }
         else{
@@ -46,15 +40,11 @@ router.delete('/user/delete', (req, res) => {
 router.post('/user/change-password', (req,res) => {
   const oldpwd = req.body.oldpassword;
   const newpwd = req.body.newpassword;
-  console.log(req.body);
-  console.log(req.body.newpassword, req.body.oldpassword);
-  // console.log(req.user._id);
   if (oldpwd !== newpwd){
     User.findOne({ _id: req.user._id}, 'username password' ).then((user) => {
         user.comparePassword(oldpwd, (err, isMatch) => {
-          console.log(isMatch);
-          // console.log(isMatch);
           if (isMatch){
+
             if(isValidPassword(newpwd)){
               user.password = newpwd
               user.save().then(() => {

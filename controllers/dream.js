@@ -66,12 +66,10 @@ router.get('/dream/:dreamId',(req,res) => {
 		bodyClass += " loggedin"
 	}
 
-  console.log("get /dream/:id req.params : ", req.params)
   Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
     if(dream){
       res.json({ dream: dream, success: true, message:'successfuly recieved dream entry', err: null })
     }else{
-      console.log("get dream/:id err - ", err)
       res.json({message:'Dream not Found', err:err})
     }
   })
@@ -79,25 +77,23 @@ router.get('/dream/:dreamId',(req,res) => {
 
 
 router.delete('/dream/:dreamId/delete', (req, res) => {
-  console.log(req.params.dreamId);
   User.findById({_id: req.user._id}).exec((err, user)=>{
     if (user){
+      //Delete Dream
       user.dreams.splice(req.params.dreamId,1)
       user.save()
-      console.log("User deleted dream successfuly")
       Dream.findByIdAndRemove({ _id: req.params.dreamId }).exec((err,dream) =>{
         if (dream){
-          console.log("Dream Deleted successfully")
           res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
         }
         else{
-          console.log("User dream not found")
+          //Error in deletion
           res.status(400).json({message:'Dream not Found', err:err})
         }
       })
     }
     else {
-      console.log("User dream not found")
+      //Not Found
       res.status(400).json({message:'User not found', err:err})
     }
   })
@@ -105,7 +101,6 @@ router.delete('/dream/:dreamId/delete', (req, res) => {
 
 
 router.post('/dream/:dreamId/edit', (req, res) => {
-  console.log(req.body.tags)
   const dreamId = req.params.dreamId
   Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
     if(dream){
