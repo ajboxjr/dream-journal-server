@@ -62,15 +62,14 @@ const checkAuth = function(req, res, next){
 			next();
 		 }
 		 catch(err){
-			 console.log("Token is not decodable error: no user")
+			  //No User
 			 res.status(403).json({ message:'User token error' });
 		 }
  		}
 		else {
 			res.status(403).json({ message:'forbidden request' });
 		}
-		//Check if route is a posting route or a profile router
-		}
+	}
 }
 
 //Middleware
