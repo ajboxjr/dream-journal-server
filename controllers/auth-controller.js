@@ -28,10 +28,8 @@ router.post('/login', (req, res) => {
       }
       // Check the password
       user.comparePassword(password, (err, isMatch) => {
-        console.log(isMatch)
         if (!isMatch) {
           // Password does not match
-          //return res.render('login', {message: 'Wrong Username or Password' });
           return res.status(401).json({ success: false, err: ['Wrong username or password.'], token:null})
         }
         // Create a token
@@ -39,51 +37,68 @@ router.post('/login', (req, res) => {
           { _id: user._id, username: user.username }, process.env.SECRET,
           { expiresIn: "30 days" }
         );
-  			//Console log logged in if logged in\
+  			//Send logged in if logged in\
         return res.status(200).json({success: true, message: 'Successfully logged in', token});
       });
     })
   }
   else {
+    //Missing fieldse
     res.status(401).json({ success: false, err: 'missing field(s)', token:null})
   }
 })
 
 // Sign user into the Dream Journal
 router.post('/sign-up', (req, res) => {
-  var regex = /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[~`<>#?!@$%^\'\"&*\-_]).{8,}$/g
+  //Express validation password
+  var username = req.body.username
   var password = req.body.password
   var verifyPassword = req.body.verifyPassword
-  User.findOne({username: req.body.username}).then((user) => {
-    if (user){
-      res.status(404).json({ success: false, token: null, err: ["user exists"] });
-    }
-    else {
-      if(password == verifyPassword){
-        passArr = isValidPassword(password)
-        if(passArr.length == 0){
-          const user = new User(req.body)
-          user.save()
-          .then((user) => {
-            var token = jwt.sign({ _id: user._id, username: user.username }, process.env.SECRET, {expiresIn:"30 days"})
-            res.json({success: true, message: 'signed in successfully', token})
-          })
-          .catch((err) => {
-            res.status(401).json({ success: false, token: null, err: [err.message] });
-          })
-        }
-        else {
-          //Return list of missing password conditions
-           res.status(401).json({ success: false, token: null, err: [passArr] });
-        }
+  if( username && password ){
+    User.findOne({username: req.body.username}).then((user) => {
+      if (user){
+        res.status(404).json({ success: false, token: null, err: ["user exists"] });
       }
       else {
-        res.status(404).json({ success: false, token: null, err: ["password mismatch"] });
+        //Check password equality
+        req.check('password','password mismatch').equals(verifyPassword)
+        var error = req.validationErrors();
+        if(error.msg){
+            res.status(404).json({ success: false, token: null, err: [error.msg] });
+        }
+        else {
+          //Regex verify password
+          passArr = isValidPassword(password)
+          if(passArr.length == 0){
+            //Save user
+            const user = new User()
+            user.username = username;
+            user.password = password;
+            user.save()
+            .then((user) => {
+              //Create and send token
+              var token = jwt.sign({ _id: user._id, username: user.username },  process.env.SECRET, {expiresIn:"30 days"})
+              res.status(200).json({success: true, err:null, token})
+            })
+            .catch((err) => {
+              //Catch save user error
+              res.status(401).json({ success: false, token: null, err: [err.message] });
+            })
+          }
+          else {
+            //Return list of missing password conditions
+             res.status(401).json({ success: false, token: null, err: passArr });
+          }
+        }
       }
-    }
-  }).catch((err)=>{
-    res.status(404).json({ success: false, token: null, message: [err.message] });
-  })
+    }).catch((err)=>{
+      //Catch finding error
+      res.status(404).json({ success: false, token: null, err: [err.message] });
+    })
+  }
+  else {
+    res.status(400).json({ success: false, token: null, err: ['missing fields']})
+  }
 })
 
 

@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const expresssValidator = require('express-validator')
 //const requirejs = require('requirejs');
 
 
@@ -21,9 +22,10 @@ app = express(helmet());
 app.use(express.static(__dirname + '/public'));
 
 //Use body parser to get infromation from forms
-app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(expresssValidator())
 
 //Added methodOverride to  Update, and Delete
 app.use(methodOverride('_method'));
