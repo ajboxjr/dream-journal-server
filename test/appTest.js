@@ -8,14 +8,7 @@ const app = require('../server')
 const User = require('../models/user')
 chai.use(chaiHttp);
 
-// var token = ''
-// var userCount = () => {
-//   User.count({},getUserCount)
-// }
-// var getUserCount = (err, count) =>{
-//   // console.log('this is the count',count);
-//   return count
-// }
+
 describe('Basic Auth', function() {
 
   describe('signup', () => {
@@ -23,10 +16,10 @@ describe('Basic Auth', function() {
     it("Should create a new user", (done)=>{
       chai.request(app)
         .post('/api/sign-up')
-        .send({username: 'Username', password: 'password'})
+        .send({username: 'Username', password: 'password!@3V', verifyPassword:'password!@3V'})
         .end(function(err, res){
-          res.body.success.should.equal(true);
-          console.log('hello')
+          // res.body.success.should.equal(true);
+          res.body.should.have.property('success')
           res.should.have.status(200);
           done()
         })
@@ -39,7 +32,7 @@ describe('Basic Auth', function() {
     it("Should log user into API", (done)=>{
       chai.request(app)
         .post('/api/login')
-        .send({'username': 'Username', 'password': 'password'})
+        .send({'username': 'Username', 'password': 'password!@3V'})
         .end(function(err, res){
         res.body.success.should.equal(true);
         res.should.have.status(200);
@@ -58,7 +51,7 @@ describe('Manipulating Dreams', () => {
   before(function(done){
     chai.request(app)
       .post('/api/login')
-      .send({username: 'Username', password : 'password'})
+      .send({username: 'Username', password : 'password!@3V'})
       .end(( err, res )=> {
         token = res.body.token
         done()
@@ -124,7 +117,7 @@ describe('Editing User info', function() {
   before(function(done){
     chai.request(app)
       .post('/api/login')
-      .send({'username': 'Username', 'password': 'password'})
+      .send({'username': 'Username', 'password': 'password!@3V'})
       .end(( err, res )=> {
         token = res.body.token
         done()
@@ -134,7 +127,7 @@ describe('Editing User info', function() {
   it('change user password',(done) => {
     chai.request(app)
     .post('/api/user/change-password')
-    .send({token, oldpassword: 'password', newpassword: 'thispassword'})
+    .send({token, oldpassword: 'password!@3V', newpassword: 'thispAssword!_k'})
     .end((err, res) =>{
       res.should.have.status(200);
       res.body.should.have.property('message')
@@ -146,11 +139,11 @@ describe('Editing User info', function() {
     console.log(token);
     chai.request(app)
     .del('/api/user/delete')
-    .send({ token, oldpassword:'thispassword' })
+    .send({ token, oldpassword:'thispAssword!_k' })
     .end((err, res) => {
       res.should.have.status(200)
-      res.body.should.have.property('message')
-      console.log(res.body.message);
+      // res.body.should.have.property('message')
+      // console.log(res.body.message);
       done()
     })
   })
