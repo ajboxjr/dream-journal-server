@@ -1,17 +1,15 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bosyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const router = express.Router();
-const User = require('../models/user');
+const mongoose = require('mongoose')
+const User = mongoose.model('User')
 const { isValidPassword } = require('../utils/utils')
 
-//Login function. Used to test and for modularity
-// Signup functon. Testing and Modulartiy
-// router.post('/login', passport.authenticate('local'), (req, res) => {
-// })
+// TODO:  Consistency to if statemenents
 
-router.post('/login', (req, res) => {
+/*
+  Login User
+  params: username, password
+*/
+exports.login = (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   // Find this user name
@@ -35,7 +33,7 @@ router.post('/login', (req, res) => {
         // Create a token
         const token = jwt.sign(
           { _id: user._id, username: user.username }, process.env.SECRET,
-          { expiresIn: "30 days" }
+          { expiresIn: "200ms" }
         );
   			//Send logged in if logged in\
         return res.status(200).json({success: true, message: 'Successfully logged in', token});
@@ -46,10 +44,14 @@ router.post('/login', (req, res) => {
     //Missing fieldse
     res.status(401).json({ success: false, err: 'missing field(s)', token:null})
   }
-})
+}
 
-// Sign user into the Dream Journal
-router.post('/sign-up', (req, res) => {
+/*
+ Sign user into the Dream Journal
+ params: username, password, verifyPassword
+*/
+
+exports.register = (req, res) => {
   //Express validation password
   var username = req.body.username
   var password = req.body.password
@@ -99,10 +101,4 @@ router.post('/sign-up', (req, res) => {
   else {
     res.status(400).json({ success: false, token: null, err: ['missing fields']})
   }
-})
-
-
-
-
-
-module.exports = router
+}

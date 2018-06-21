@@ -1,16 +1,16 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bosyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const router = express.Router();
-
-
-const User = require('../models/user');
-const Dream = require('../models/dream')
-
 var { isValidPassword } = require('../utils/utils')
+const mongoose = require('mongoose')
 
-router.delete('/user/delete', (req, res) => {
+const User = mongoose.model('User')
+const Dream = mongoose.model('Dream')
+
+/*
+ Delete User & properties(Dreams,tags, .etc ) from database
+ params: oldpassword
+*/
+
+exports.deleteUser = (req, res) => {
   //Verfiy password
   //for each dream in user delete from db
   var oldpwd = req.body.oldpassword;
@@ -41,9 +41,13 @@ router.delete('/user/delete', (req, res) => {
   else {
     res.status(400).json({ success:false, err: ["missing field"] })
   }
-})
+}
 
-router.post('/user/change-password', (req,res) => {
+/*
+  Change user Password
+  params: oldpassword, newpassword
+*/
+exports.changeUserPassword = (req, res) =>{
   const oldpwd = req.body.oldpassword;
   const newpwd = req.body.newpassword;
   if (oldpwd !== newpwd){
@@ -73,9 +77,9 @@ router.post('/user/change-password', (req,res) => {
   else{
     res.status(404).json({ message: "Invalid Password(s)",  success: false })
   }
-})
+}
 
-  router.get('/logout', (req, res) => {
-})
 
-module.exports = router
+exports.logoutUser = (req, res) => {
+
+}

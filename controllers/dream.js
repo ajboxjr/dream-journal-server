@@ -1,16 +1,17 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
-
-router = express.Router()
-
 //Models
-const Dream = require('../models/dream');
-const User = require('../models/user');
+const mongoose = require('mongoose')
+const Dream = mongoose.model('Dream')
+const User = mongoose.model('User')
+// const Dream = require('../models/dream');
+// const User = require('../models/user');
 
 
-// Render all views
-router.get('/dream', (req, res) => {
+/*
+    Populate a list of dreams
+*/
+
+exports.getDreamList = (req, res ) => {
+  console.log(req.user._id);
   User.findById({ _id: req.user._id }).populate('dreams')
     .exec(function (err, user) {
 
@@ -28,11 +29,15 @@ router.get('/dream', (req, res) => {
       res.status(401).json({ success: false, message:"Error!" })
 
     })
-})
+}
 
+/*
+  Post a dream to the Database
+  body: entry, title, tags, author
+*/
 
-//Post a dream to the Database
-router.post('/dream/new', (req,res) => {
+exports.createDream = (req, res) => {
+    console.log(req.user._id);
     const dream = new Dream()
     //Add new entry
     dream.entry = req.body.entry;
@@ -55,16 +60,14 @@ router.post('/dream/new', (req,res) => {
       .catch((err) => {
         res.json({ dream, success: false, err: err })
     });
-})
+}
 
+/*
+  Show dream by Id
+  params: dreamId
+*/
 
-//Show dream by Id
-router.get('/dream/:dreamId',(req,res) => {
-
-  let bodyClass = "dream"
-	if (req.user) {
-		bodyClass += " loggedin"
-	}
+exports.getDream = (req, res) => {
 
   Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
     if(dream){
@@ -73,10 +76,14 @@ router.get('/dream/:dreamId',(req,res) => {
       res.json({message:'Dream not Found', err:err})
     }
   })
-})
+}
 
+/*
+  Delete Dream By ID
+  params: dreamID
+*/
 
-router.delete('/dream/:dreamId/delete', (req, res) => {
+exports.deleteDream = (req, res) => {
   User.findById({_id: req.user._id}).exec((err, user)=>{
     if (user){
       //Delete Dream
@@ -97,10 +104,14 @@ router.delete('/dream/:dreamId/delete', (req, res) => {
       res.status(400).json({message:'User not found', err:err})
     }
   })
-})
+}
 
+/*
+  Edit Dream by ID
+  params: dreamID
+*/
 
-router.post('/dream/:dreamId/edit', (req, res) => {
+exports.editDream = (req, res) => {
   const dreamId = req.params.dreamId
   Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
     if(dream){
@@ -124,34 +135,4 @@ router.post('/dream/:dreamId/edit', (req, res) => {
       res.status(404).json({ message: err, success: false })
     }
   })
-})
-
-
-// router.get('/dream/tag/:tagName', (req, res) => {
-//   let selectTag = req.params.tagName;
-//   let bodyClass = "dream tag-search"
-//   if (req.user) {
-//     bodyClass += "loggedin"
-//   }
-//   Dream.find({ tags: selectTag }, (err, dreams) => {
-//     console.log(dreams)
-//     res.render('search', { dreams })
-//   })
-//
-// })
-
-
-// router.post('/dream/search/', (req, res) => {
-//   let search = req.body
-//     Dream.search(req.body.search, (err, dreams) =>{
-//       if (err){
-//         console.log(err);
-//       }
-//       console.log(dreams);
-//
-//       res.render('search', { search, dreams })
-//     })
-// })
-
-
-module.exports = router
+}
