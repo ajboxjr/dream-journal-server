@@ -6,7 +6,9 @@
   "scripts": {
     "test": "mocha",
     "deploy": "gcloud app deploy",
-    "start": "node server.js"
+    "start": "node server.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "keywords": [
     "lucid",
@@ -35,11 +37,13 @@
     "method-override": "^2.3.10",
     "mongoose": "^4.13.9",
     "npm": "^6.0.0",
-    "requirejs": "^2.3.5"
+    "requirejs": "^2.3.5",
+    "snyk": "^1.88.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "nodemon": "^1.17.5"
-  }
+  },
+  "snyk": true
 }
