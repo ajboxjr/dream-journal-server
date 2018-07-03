@@ -3,7 +3,11 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const expresssValidator = require('express-validator')
 const helmet = require('helmet')
+var morgan = require('morgan')
 app = express(helmet())
+
+//Morgan
+app.use(morgan('tiny'))
 
 //Use body parser to get infromation from forms
 app.use(bodyParser.json())
@@ -19,27 +23,19 @@ app.use(methodOverride('_method'));
 	if Authentication set req.user to null
 */
 
-var handleUrl = function(fn){
-  return function(req, res, next){
-		console.log("req.url : ", req.url)
-    if(req.url == '/api/login'  ||  req.url == '/api/sign-up'){
-      res.user == null
-      next();
-    }
-		else {
-	    fn(req, res, function(){
-				console.log('hi');
-	      next();
-	    })
-		}
-  }
-}
-
-//Middleware
-app.use(handleUrl(require('./handlers/token').requireValidToken))
-
 //Include Routes
 app.use('/api', require('./routes/routes'))
 
+// error handler, required as of 0.3.0
+app.use('*', function(req, res, next) {
+  // TODO: Add links
+  res.status(404).json({
+    error: [
+      {
+        details: "Not Found"
+      }
+    ]
+  });
+});
 
 module.exports = app
