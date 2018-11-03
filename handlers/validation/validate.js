@@ -1,4 +1,5 @@
 const {validationResult} = require('express-validator/check');
+var {jsonHeader} = require('../jsonResponse/jsonResponse');
 
 // TODO: Export default
 exports.handleValidation = (schema) => {
@@ -17,18 +18,28 @@ exports.handleValidation = (schema) => {
       };
       var errors = validationResult(req).formatWith(errorFormatter)
       if (!errors.isEmpty()) {
-        return res.status(400).json({
-          jsonapi: {
-            version: "1.0"
-          },
-          errors: errors.array(),
-          links: {
-            "self": "/api" + req.url
-          }
-        })
+        return res.status(400).json(
+          jsonHeader({
+            errors: errors.array(),
+            links: {
+              "self": "/api" + req.url
+            }
+          })
+        )
       }
-
       next()
     })
   }
 };
+
+/*
+  Verify password capacha
+  IN: req.body password name
+*/
+exports.passwordValidation = (password_name,req, res, next) => {
+  req.check(password_name, "Must contain number 0-9").matches(/^(?=.*?[0-9])/g)
+  req.check(password_name, "Must container capital A-Z").matches(/^(?=.*?[A-Z])/g)
+  req.check(password_name, "Must contain special character excluding").matches(/^(?=.*?[\W])/g)
+  req.check(password_name, "Must be at least 8 characters long").matches(/^(?=.{8,}$)/g)
+  next()
+}
