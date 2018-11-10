@@ -4,42 +4,42 @@ const mongoose = require('mongoose')
 
 const User = mongoose.model('User')
 const Dream = mongoose.model('Dream')
+var { userResponse, errorResponse } = require('../handlers/jsonResponse/jsonResponse')
+
 
 /*
  Delete User & properties(Dreams,tags, .etc ) from database
  params: oldpassword
 */
+// TODO: FIX ERROR RESPONSEJSON
 
-exports.deleteUser = (req, res) => {
+exports.deleteUser = async (req, res) => {
   //Verfiy password
   //for each dream in user delete from db
   var oldpwd = req.body.oldpassword;
-  if( oldpwd ){
-    User.findById({_id: req.user._id}, 'username password').populate('dreams').exec((err, user) => {
-      if (user){
-        //Delete user
-        user.comparePassword(oldpwd, (err, isMatch) => {
-          if (isMatch){
-            //Delete dream from it's database & user.
-            user.dreams.map((dreamId, idx) => {
-              //Optional logging for whether dream is found
-              Dream.findByIdAndRemove({ _id: dreamId })
-              user.remove()
-            })
-            res.status(200).json({ err:['user and dreams deleted successfuly'], success: true })
-          }
-          else{
-            res.status(400).json({ err:['invalid credentials'], success: false });
-          }
-        })
+  try {
+    const db_user = await User.findById({_id: req.user._id}, 'username password').populate('dreams').exec()
+    console.log(db_user);
+    if (!db_user){
+      return res.status(400).json(errorResponse("User not found"))
+    }
+    //Delete user
+    db_user.comparePassword(oldpwd, (err, isMatch) => {
+      if (!isMatch){
+        return res.status(400).json(errorResponse('invalid credentials'));
       }
-      else {
-        res.status(400).json({ message:"User not found", success:false, err:err })
-      }
+      //Delete dream from it's database & user.
+      db_user.dreams.map((dreamId, idx) => {
+        //Optional logging for whether dream is found
+        Dream.findByIdAndRemove({ _id: dreamId })
+        db_user.remove()
+      })
+      res.status(202)
     })
   }
-  else {
-    res.status(400).json({ success:false, err: ["missing field"] })
+  catch(err){
+    console.log(err);
+    res.status(500).json(errorResponse(err))
   }
 }
 
@@ -47,35 +47,28 @@ exports.deleteUser = (req, res) => {
   Change user Password
   params: oldpassword, newpassword
 */
-exports.changeUserPassword = (req, res) =>{
+exports.changeUserPassword = async (req, res) => {
   const oldpwd = req.body.oldpassword;
   const newpwd = req.body.newpassword;
-  if (oldpwd !== newpwd){
-    User.findOne({ _id: req.user._id}, 'username password' ).then((user) => {
-        user.comparePassword(oldpwd, (err, isMatch) => {
-          if (isMatch){
-
-            if(isValidPassword(newpwd)){
-              user.password = newpwd
-              user.save().then(() => {
-                res.status(200).json({ message: "Password successfully Changed.", success: true, err:null })
-              })
-            }
-            else {
-              res.status(402).json({error: "Password must contain (1) capital, lowercase, number, special char \"%@!$..\""})
-            }
-          }
-          else {
-            res.status(404).json({ message: "No user",  success: false })
-          }
-        })
-    })
-    .catch((err) => {
-      res.status(404).json({ message: "An error has occured:"+err,  success: false })
+  try {
+    const user = await User.findOne({ _id: req.user._id}, 'username password' )//.then((user) => {
+    if(!user){
+      return  res.status(404).json(errorResponse("no user"))
+    }
+    user.comparePassword(oldpwd, (err, isMatch) => {
+      if (!isMatch){
+        return res.status(402).json(errorResponse("Password is not valid"))
+      }
+      // CHANGED: Move validation to handler
+      //if(isValidPassword(newpwd)){}
+      user.password = newpwd
+      user.save().then(() => {
+        res.status(200)
+      })
     })
   }
-  else{
-    res.status(404).json({ message: "Invalid Password(s)",  success: false })
+  catch(err){
+    res.status(404).json(errorResponse("An error has occured"))
   }
 }
 
