@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const { isValidPassword } = require('../utils/utils')
+var { tokenReponse, errorResponse } = require('../handlers/jsonResponse/jsonResponse')
+
 
 // TODO:  Consistency to if statemenents
 
@@ -9,96 +11,71 @@ const { isValidPassword } = require('../utils/utils')
   Login User
   params: username, password
 */
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   // Find this user name
-  if(username && password){
-    User.findOne({ username }, 'username password', function(err, user){
-      if (!user) {
-        // User not found
-        if (err){
-          return res.status(401).json({ success: false, err: err, token:null})
-        }
-        else{
-          return res.status(401).json({ success: false, err: ['Wrong username or password.'], token:null})
-        }
-      }
-      // Check the password
+  try {
+    const user = await User.findOne({ username }, 'username password')
+    if(user){
       user.comparePassword(password, (err, isMatch) => {
         if (!isMatch) {
           // Password does not match
-          return res.status(401).json({ success: false, err: ['Wrong username or password.'], token:null})
+          //status: 'error', message: ["Wrong username or password."]
+          return res.status(400).json(errorResponse("Wrong Usrname or password"))
         }
         // Create a token
         const token = jwt.sign(
           { _id: user._id, username: user.username }, process.env.SECRET,
-          { expiresIn: "200ms" }
+          { expiresIn: process.env.TOKEN_EXP }
         );
-  			//Send logged in if logged in\
-        return res.status(200).json({success: true, message: 'Successfully logged in', token});
-      });
-    })
+        //Send logged in if logged in
+        //"data": {id:"date?", type:"token",attributes: {access_token: token, token_type: "Bearer-Token", expires-in: "30days"}}
+        return res.status(200).json(tokenReponse(token))
+      })
+    }
+    else {
+      return res.status(400).json(errorResponse("Wrong Usrname or password"))
+    }
   }
-  else {
-    //Missing fieldse
-    res.status(401).json({ success: false, err: 'missing field(s)', token:null})
-  }
+  catch(err){
+      return res.status(400).json(errorResponse("Login User error"))
+    }
 }
 
 /*
  Sign user into the Dream Journal
  params: username, password, verifyPassword
+ Pre: Validate body(password capacha, equality etc.)
 */
 
-exports.register = (req, res) => {
+exports.register = async (req, res) => {
   //Express validation password
   var username = req.body.username
   var password = req.body.password
   var verifyPassword = req.body.verifyPassword
-  if( username && password ){
-    User.findOne({username: req.body.username}).then((user) => {
-      if (user){
-        res.status(404).json({ success: false, token: null, err: ["user exists"] });
-      }
-      else {
-        //Check password equality
-        req.check('password','password mismatch').equals(verifyPassword)
-        var error = req.validationErrors();
-        if(error.msg){
-            res.status(404).json({ success: false, token: null, err: [error.msg] });
-        }
-        else {
-          //Regex verify password
-          passArr = isValidPassword(password)
-          if(passArr.length == 0){
-            //Save user
-            const user = new User()
-            user.username = username;
-            user.password = password;
-            user.save()
-            .then((user) => {
-              //Create and send token
-              var token = jwt.sign({ _id: user._id, username: user.username },  process.env.SECRET, {expiresIn:"30 days"})
-              res.status(200).json({success: true, err:null, token})
-            })
-            .catch((err) => {
-              //Catch save user error
-              res.status(401).json({ success: false, token: null, err: [err.message] });
-            })
-          }
-          else {
-            //Return list of missing password conditions
-             res.status(401).json({ success: false, token: null, err: passArr });
-          }
-        }
-      }
-    }).catch((err)=>{
-      //Catch finding error
-      res.status(404).json({ success: false, token: null, err: [err.message] });
+  try {
+    const db_user  = await User.findOne({username: req.body.username})
+    if (db_user){
+      return res.status(404).json(errorResponse("User exists, Please Login"))
+    }
+    const user = new User()
+    user.username = username;
+    user.password = password;
+    user.save()
+    .then((saved_user) => {
+      //Create and send token
+      var token = jwt.sign({ _id: saved_user._id, username: saved_user.username },  process.env.SECRET, {expiresIn:process.env.TOKEN_EXP})
+      res.status(200).json(tokenReponse(token))
+      })
+      .catch((err) => {
+        //Catch save user error
+        res.status(401).json(errorResponse(err.message));
     })
   }
-  else {
-    res.status(400).json({ success: false, token: null, err: ['missing fields']})
+  catch(err){
+    // Catch finding error
+    console.log(err);
+    res.status(404).json(errorResponse(err.message));
   }
 }

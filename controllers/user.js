@@ -19,10 +19,10 @@ exports.deleteUser = async (req, res) => {
   var oldpwd = req.body.oldpassword;
   try {
     const db_user = await User.findById({_id: req.user._id}, 'username password').populate('dreams').exec()
-    console.log(db_user);
     if (!db_user){
       return res.status(400).json(errorResponse("User not found"))
     }
+    console.log(db_user);
     //Delete user
     db_user.comparePassword(oldpwd, (err, isMatch) => {
       if (!isMatch){
@@ -34,12 +34,12 @@ exports.deleteUser = async (req, res) => {
         Dream.findByIdAndRemove({ _id: dreamId })
         db_user.remove()
       })
-      res.status(202)
+      return res.status(202).json(userResponse('deletion sucessful'))
     })
   }
   catch(err){
     console.log(err);
-    res.status(500).json(errorResponse(err))
+    return res.status(500).json(errorResponse(err))
   }
 }
 

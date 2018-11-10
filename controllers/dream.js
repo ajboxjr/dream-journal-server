@@ -4,135 +4,125 @@ const Dream = mongoose.model('Dream')
 const User = mongoose.model('User')
 // const Dream = require('../models/dream');
 // const User = require('../models/user');
-
+const { dreamResponse, errorResponse } = require('../handlers/jsonResponse/jsonResponse')
+const _ = require("underscore")
 
 /*
     Populate a list of dreams
 */
 
-exports.getDreamList = (req, res ) => {
-  console.log(req.user._id);
-  User.findById({ _id: req.user._id }).populate('dreams')
-    .exec(function (err, user) {
-
-      if (!err){
-        if (user){
-            const dreams = user.dreams
-            res.status(200).json({ dreams, success: true, message:"successfuly recieved!! :)" })
-          }
-      }
-      else{
-          res.status(401).json({ success: true, error: err })
-
-      }
-    }).catch((err) =>{
-      res.status(401).json({ success: false, message:"Error!" })
-
-    })
+exports.getDreamList = async (req, res) => {
+  try {
+    const user = await User.findById({_id: req.user._id}).populate('dreams').exec()
+    if (!user) {
+      return res.status(401).json(errorResponse("User not Found"))
+    }
+    const dreams = user.dreams
+    res.status(200).json(dreamResponse(dreams))
+  } catch (err) {
+    res.status(401).json(errorResponse('Problem populating dreams'))
+  }
 }
 
-/*
+  /*
   Post a dream to the Database
   body: entry, title, tags, author
 */
 
-exports.createDream = (req, res) => {
-    console.log(req.user._id);
-    const dream = new Dream()
-    //Add new entry
-    dream.entry = req.body.entry;
-    dream.title = req.body.title;
-    dream.tags = req.body.tags
-    dream.author = req.user._id;
+  exports.createDream = (req, res) => {
+    //copy req.body into object
+    const dream = new Dream(_.extend({
+      author: req.user._id
+    }, req.body))
     //Save dream and add to user.
     dream.save().then((dream) => {
 
-      return User.findById({ _id: dream.author })
+      return User.findById({_id: dream.author})
 
     }).then((user) => {
-        //Store the dream id to the user.
-        user.dreams.unshift(dream)
-        user.save().then((user) =>{
-          res.status(201).json({ dream, success: true, err: null })
-        })
-        //res.redirect('/dream')
+      //Store the dream id to the user.
+      user.dreams.unshift(dream)
+      user.save().then((user) => {
+        // FIXME: PULL REQUEST TO MAKE ALL DATA an array
+        res.status(201).json(dreamResponse([dream]))
       })
-      .catch((err) => {
-        res.json({ dream, success: false, err: err })
+      //res.redirect('/dream')
+    }).catch((err) => {
+      res.json(errorResponse(err))
     });
-}
+  }
 
-/*
+  /*
   Show dream by Id
   params: dreamId
 */
 
-exports.getDream = (req, res) => {
+  exports.getDream = async (req, res) => {
+    try {
+      const dream = await Dream.findById({_id: req.params.dreamId}).populate({path: 'author', select: 'username _id'}).exec()
+      if (!dream) {
+        return res.json(errorResponse("Dream not found"))
+      }
+      res.json(dreamResponse(dream))
 
-  Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
-    if(dream){
-      res.json({ dream: dream, success: true, message:'successfuly recieved dream entry', err: null })
-    }else{
-      res.json({message:'Dream not Found', err:err})
     }
-  })
-}
+    catch (err) {
+      res.json(errorResponse(err))
+    }
+  }
 
-/*
+  /*
   Delete Dream By ID
   params: dreamID
 */
 
-exports.deleteDream = (req, res) => {
-  User.findById({_id: req.user._id}).exec((err, user)=>{
-    if (user){
+  exports.deleteDream = async (req, res) => {
+    try {
+      const user = await User.findById({_id: req.user._id}).exec()
+      if (!user) {
+        //Not Found
+        return res.status(400).json(errorResponse("User not found"))
+      }
       //Delete Dream
-      user.dreams.splice(req.params.dreamId,1)
+      user.dreams.splice(req.params.dreamId, 1)
       user.save()
-      Dream.findByIdAndRemove({ _id: req.params.dreamId }).exec((err,dream) =>{
-        if (dream){
-          res.status(200).json({ message: "Dream Deleted successfully", success: true, err: null })
-        }
-        else{
+      Dream.findByIdAndRemove({_id: req.params.dreamId}).exec((err, dream) => {
+        if (!dream) {
           //Error in deletion
-          res.status(400).json({message:'Dream not Found', err:err})
+          return res.status(400).json(errorResponse("Dream not Found"))
         }
+        res.status(204).json({})
       })
     }
-    else {
-      //Not Found
-      res.status(400).json({message:'User not found', err:err})
-    }
-  })
-}
+    catch(err){
+      res.status(400).json(errorResponse("h"))
 
-/*
+    }
+}
+  /*
   Edit Dream by ID
   params: dreamID
 */
 
-exports.editDream = (req, res) => {
-  const dreamId = req.params.dreamId
-  Dream.findById({ _id: req.params.dreamId }).populate({path: 'author', select:'username _id'}).exec((err, dream) => {
-    if(dream){
-      if (req.body.title && req.body.entry && req.body.tags){
+  exports.editDream = async (req, res) => {
+    const dreamId = req.params.dreamId
+    try {
+      const dream = await Dream.findById({_id: req.params.dreamId}).exec()
+
+        if(!dream){
+          return res.status(404).json(errorResponse("Dream not found"))
+        }
         dream.title = req.body.title
         dream.tags = req.body.tags
         dream.entry = req.body.entry
-        dream.save()
-          .then((dream) => {
-              res.json({ dream: dream, message: 'successfully edited', success:true, err: null })
-          })
-          .catch((err) =>{
-              res.status(500).json({ message: 'could not save dream', success:false, err: true })
-          })
-      }
-      else{
-        res.status(404).json({ message: 'all fields not entered', success: false, err: true })
-      }
+        dream.save().then((update_dream) => {
+          // FIXME: PULL REQUEST TO MAKE ALL DATA an array
+          res.status(200).json(dreamResponse([update_dream]))
+        }).catch((err) => {
+          res.status(500).json(errorResponse("Couldn't save dream"))
+        })
     }
-    else {
-      res.status(404).json({ message: err, success: false })
+    catch (err){
+      res.status(404).json(errorResponse(err))
     }
-  })
-}
+  }
