@@ -1,6 +1,7 @@
 const {passwordValidation} = require('./validate')
 
 exports.register = (req, res, next) => {
+
   req.check('username', 'Missing field (username)').exists()
   req.check('password', 'Missing field (password)').exists()
   req.check('verifyPassword', 'Missing field (verifyPassword)').exists()
@@ -8,6 +9,7 @@ exports.register = (req, res, next) => {
   if(req.validationErrors()){
     return next()
   }
+  console.log(req.body.verifyPassword, req.body.password);
   req.check('password','password mismatch').equals(req.body.verifyPassword)
   if(req.validationErrors()){
     return next()
