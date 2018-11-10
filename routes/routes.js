@@ -12,6 +12,7 @@ const { requireValidToken } = require('../handlers/token')
 const {handleValidation} = require('../handlers/validation/validate')
 const {login,register} = require('../handlers/validation/validateAuth')
 const {dreamEntry} = require('../handlers/validation/validateDream')
+const {updatePassword, removeUser } = require('../handlers/validation/validateUser')
 
 
 //AUTH ROUTES
@@ -26,8 +27,8 @@ router.delete('/dream/:dreamId/delete', requireValidToken, dreams.deleteDream)
 router.post('/dream/:dreamId/edit', requireValidToken, handleValidation(dreamEntry), dreams.editDream)
 
 //User ROUTES
-router.delete('/user/delete', user.deleteUser)
-router.post('/user/change-password', user.changeUserPassword)
+router.delete('/user/delete', requireValidToken, handleValidation(removeUser), user.deleteUser)
+router.post('/user/change-password', requireValidToken, handleValidation(updatePassword), user.changeUserPassword)
 router.get('/logout', user.logoutUser)
 
 module.exports = router
