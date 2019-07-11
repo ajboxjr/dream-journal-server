@@ -18,7 +18,7 @@
   "author": "Anthony Box",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/nodejs-repo-tools": "^2.2.1",
+    "@google-cloud/nodejs-repo-tools": "^2.3.4",
     "bcrypt": "^1.0.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
