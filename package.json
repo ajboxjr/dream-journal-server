@@ -33,7 +33,7 @@
     "hoek": "^5.0.3",
     "jsonwebtoken": "^8.1.0",
     "method-override": "^2.3.10",
-    "mongoose": "^4.13.9",
+    "mongoose": "^5.7.5",
     "npm": "^6.0.0",
     "requirejs": "^2.3.5"
   },
