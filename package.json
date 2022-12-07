@@ -25,7 +25,7 @@
     "chai-http": "^3.0.0",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "express-handlebars": "^3.0.0",
     "express-validator": "^5.2.0",
     "flash": "^1.1.0",
